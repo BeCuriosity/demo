@@ -47,7 +47,7 @@ public class MovieImageServiceImpl implements MovieImageService{
 
 	@Override
 	public int add(MovieImage mi) {
-		return 0;
+		return movieImageMapper.insert(mi);
 	}
 
 	@Override
@@ -68,6 +68,13 @@ public class MovieImageServiceImpl implements MovieImageService{
 		mie.createCriteria().andMovieIdEqualTo(movieId);
 		List<MovieImage> selectByExample = movieImageMapper.selectByExample(mie);
 		return selectByExample;
+	}
+
+	@Override
+	public int delete(int mid) {
+		MovieImageExample mie = new MovieImageExample();
+		mie.createCriteria().andMovieIdEqualTo(mid);
+		return movieImageMapper.deleteByExample(mie);
 	}
 
 

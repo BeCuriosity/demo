@@ -18,8 +18,18 @@ public class Actor {
     private String sex;
 
     private Date birthday;
+    
+    
 
-    private String nation;
+    @Override
+	public String toString() {
+		return "Actor [actorId=" + actorId + ", aname=" + aname + ", height=" + height + ", secondName=" + secondName
+				+ ", position=" + position + ", country=" + country + ", sex=" + sex + ", birthday=" + birthday
+				+ ", nation=" + nation + ", birthplace=" + birthplace + ", constellation=" + constellation
+				+ ", description=" + description + ", pic=" + pic + "]";
+	}
+
+	private String nation;
 
     private String birthplace;
 

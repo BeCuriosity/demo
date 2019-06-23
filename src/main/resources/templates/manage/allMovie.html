@@ -44,6 +44,15 @@
 		<script type="text/javascript" src="js/easyui/locale/easyui-lang-zh_CN.js"></script>
 		<script type="text/javascript" src="ckeditor/ckeditor.js"></script>
 		<script type="text/javascript">
+		
+			function del(movieId){
+				$.get("deleteMovie",{
+					movieId:movieId
+				},function(data){
+					alert(data.massage);
+				})
+			}
+			
 			function upload(){
 				$("#ImgUpload").ajaxSubmit(function(message) {  
 			  
@@ -75,13 +84,15 @@
 					var type = data.typeList;
 					for(var i = 0; i < type.length; i++){
 						var t = type[i];
-						var $typeList = $("#typeList").find("input").css("value",t.typeId);
+						var $typeList = $('input[value="'+t.typeId+'"]')
 						$typeList.attr("checked","true");
 					}
-					$("#img-change").attr("src","img/"+data.imageList[0].image);
+					if(data.imageList[0] != null){
+						$("#img-change").attr("src","img/"+data.imageList[0].image);
+					}
 					$("#moid").val(data.movieId);
 					$("#mname").val(data.name);
-					$("#director").val("");
+					$("#director").val(data.direlist);
 					$("#actor").val(data.actorList);
 					$("#releaseTime").datebox('setValue',data.releaseTime);
 					$("#duration").val(data.duration);
@@ -100,6 +111,7 @@
 				var date = new Date($("#releaseTime").val());
 				var movieId = $("#moid").val();
 				var name = $("#mname").val();
+				var dire = $("#director").val();
 				var actor = $("#actor").val();
 				var releaseTime = date;
 				var duration = $("#duration").val();
@@ -107,13 +119,14 @@
 				var language = $("#language").val();
 				var foreignName = $("#foreignName").val();
 				var description = CKEDITOR.instances.description.getData();
-				$("#typeList").find("input").css("checked","checked").each(function(i){
+				$('input[name="typeId"]:checked').each(function(i){
 					typeList[i] =$(this).val();
 				});
 				$.post("alterMovie",{
 					typeList:typeList,
 					movieId:movieId,
 					name:name,
+					dire:dire,
 					actor:actor,
 					releaseTime:releaseTime,
 					duration:duration,
@@ -149,6 +162,7 @@
 									 '		<td>'+v.language+'</td>' +
 									 '		<td>' +
 									 '			<button class="layui-btn" onclick="details('+v.movieId+')">详细信息</button>\n' +
+									 '			<button class="layui-btn" onclick="del('+v.movieId+')">删除</button>\n' +
 									 '		</td>' +
 									 '	</tr>'
 									)
@@ -166,12 +180,10 @@
 		
 		影片名称:<input class="easyui-text" type="text" id="mname"><br>
 		导&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;演:<input class="easyui-text" type="text" id="director"><br>
-		主&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;演:<input class="easyui-text" type="text" id="actor"><br>
+		主&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;演:<input class="easyui-text" type="text" id="actor">以'，'分隔<br>
 		类型: 
 		<div id="typeList" name="movieType">
-			<label th:each="t:${typeList}" class="check-box">
-    			<input id="type" name="typeId" type="checkbox" th:value="${t.typeId}" th:text="${t.name}">
-			</label>
+    		<input id="type" name="typeId" type="checkbox" th:each="t:${typeList}" th:value="${t.typeId}" th:text="${t.name}">
 		</div>
 			<br>
 		上映时间:<input class="easyui-datebox" type="text" required style="width:200px" id="releaseTime"><br>
@@ -185,7 +197,7 @@
         </script>
 		
 		<div id="movieImage">
-		电影海报:
+		电影封面:
 		<form id="ImgUpload" action="ImgUpload" method="post" enctype="multipart/form-data" onsubmit="return upload();">
 			<input type="file" id="file" name="file" style="display:none;" onchange="filechange(event)">
 			<input type="text" id="moid" name="movieId" hidden="hidden">
@@ -252,6 +264,7 @@
 						<td th:text="${m.language}"></td>
 						<td>
 							<button class="layui-btn" th:onclick="'javascript:details('+${m.movieId}+')' ">详细信息</button>
+							<button class="layui-btn" th:onclick="'javascript:del('+${m.movieId}+')' ">删除</button>
 						</td>
 					</tr>
 				</tbody>
@@ -288,6 +301,7 @@
 								 '		<td>'+v.language+'</td>' +
 								 '		<td>' +
 								 '			<button class="layui-btn" onclick="details('+v.movieId+')">详细信息</button>\n' +
+								 '			<button class="layui-btn" onclick="del('+v.movieId+')">删除</button>\n' +
 								 '		</td>' +
 								 '	</tr>'
 								)

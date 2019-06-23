@@ -17,5 +17,6 @@ public interface MovieImageService {
 	
 	int add(MovieImage mi);
 	int delete(MovieImage mi);
+	int delete(int mid);
 	int update(MovieImage mi);
 }

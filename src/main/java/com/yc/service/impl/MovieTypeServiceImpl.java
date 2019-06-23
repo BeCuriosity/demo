@@ -48,6 +48,22 @@ public class MovieTypeServiceImpl implements MovieTypeService{
 			mt.setTypeId(Integer.parseInt(s));
 			mtm.insert(mt);
 		}
+	}
+
+	public void add(Movie movie, String[] typeList) {
+		for(String s:typeList) {
+			MovieType mt = new MovieType();
+			mt.setMovieId(movie.getMovieId());
+			mt.setTypeId(Integer.parseInt(s));
+			mtm.insert(mt);
+		}
+	}
+
+	@Override
+	public int delete(int mid) {
+		MovieTypeExample mte = new MovieTypeExample();
+		mte.createCriteria().andMovieIdEqualTo(mid);
+		return mtm.deleteByExample(mte);
 	} 
 	
 	

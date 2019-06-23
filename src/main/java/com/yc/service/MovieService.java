@@ -74,4 +74,9 @@ public interface MovieService {
 	 
 	 int showingCnt();
 	 
+	 int add(Movie movie);
+	 
+	 int getMovieId(Movie movie);
+	 
+	 int deleteMovie(int id);
 }

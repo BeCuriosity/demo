@@ -13,4 +13,8 @@ public interface MovieTypeService {
 	List<MovieType> findMovieIdByTypeId(int id);
 	
 	void updateType(Movie movie,String[] str);
+	
+	void add(Movie movie,String[] str);
+	
+	int delete(int mid);
 }

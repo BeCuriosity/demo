@@ -46,11 +46,90 @@ public class MovieActorServiceImpl implements MovieActorService{
 				ma.setMovieId(movie.getMovieId());
 				Actor a = new Actor();
 				a.setAname(s);
+				a.setPosition("演员");
 				asi.add(a);
 				int id = asi.find(s);
 				ma.setActorId(id);
 				mam.insert(ma);
 			}
 		}
+	}
+	
+	@Override
+	public void update(int x, String dire, Movie movie) {
+		String[] split = dire.split("，");
+		for (String s : split) {
+			int i  = asi.find(s);
+			if( i > 0) {
+				MovieActor ma = new MovieActor();
+				ma.setMovieId(movie.getMovieId());
+				ma.setActorId(i);
+				mam.insert(ma);
+			}else {
+				MovieActor ma = new MovieActor();
+				ma.setMovieId(movie.getMovieId());
+				Actor a = new Actor();
+				a.setAname(s);
+				a.setPosition("导演");
+				asi.add(a);
+				int id = asi.find(s);
+				ma.setActorId(id);
+				mam.insert(ma);
+			}
+		}
+		
+	}
+
+	public void add(String actor, Movie movie) {
+		String[] split = actor.split("，");
+		for (String s : split) {
+			int i  = asi.find(s);
+			if( i > 0) {
+				MovieActor ma = new MovieActor();
+				ma.setMovieId(movie.getMovieId());
+				ma.setActorId(i);
+				mam.insert(ma);
+			}else {
+				MovieActor ma = new MovieActor();
+				ma.setMovieId(movie.getMovieId());
+				Actor a = new Actor();
+				a.setAname(s);
+				a.setPosition("演员");
+				asi.add(a);
+				int id = asi.find(s);
+				ma.setActorId(id);
+				mam.insert(ma);
+			}
+		}
+		
+	}
+	
+	public void add(int x,String dire, Movie movie) {
+		String[] split = dire.split("，");
+		for (String s : split) {
+			int i  = asi.find(s);
+			if( i > 0) {
+				MovieActor ma = new MovieActor();
+				ma.setMovieId(movie.getMovieId());
+				ma.setActorId(i);
+				mam.insert(ma);
+			}else {
+				MovieActor ma = new MovieActor();
+				ma.setMovieId(movie.getMovieId());
+				Actor a = new Actor();
+				a.setAname(s);
+				a.setPosition("导演");
+				asi.add(a);
+				int id = asi.find(s);
+				ma.setActorId(id);
+				mam.insert(ma);
+			}
+		}
+	}
+
+	@Override
+	public int delete(int mid) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

@@ -231,5 +231,28 @@ public class MovieServiceImpl implements MovieService{
 		return updateByPrimaryKeySelective;
 	}
 
+	@Override
+	public int add(Movie movie) {
+		int insert = movieMapper.insert(movie);
+		return insert;
+	}
+	
+	@Override
+	public int getMovieId(Movie movie) {
+		MovieExample me = new MovieExample();
+		me.createCriteria().andNameEqualTo(movie.getName());
+		List<Movie> selectByExample = movieMapper.selectByExample(me);
+		if(selectByExample.size() > 0) {
+			return selectByExample.get(0).getMovieId();
+		}else {
+			return 0;
+		}
+	}
+
+	@Override
+	public int deleteMovie(int id) {
+		return movieMapper.deleteByPrimaryKey(id);
+	}
+
 
 }

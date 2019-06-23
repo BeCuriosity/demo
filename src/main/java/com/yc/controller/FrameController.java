@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.core.annotation.SynthesizedAnnotation;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ import com.yc.bean.Movie;
 import com.yc.bean.MovieImage;
 import com.yc.bean.MovieType;
 import com.yc.bean.Type;
+import com.yc.service.MovieImageService;
 import com.yc.service.impl.MovieActorServiceImpl;
 import com.yc.service.impl.MovieImageServiceImpl;
 import com.yc.service.impl.MovieServiceImpl;
@@ -80,10 +82,8 @@ public class FrameController {
 			String type = "";
 			Utils.transformBeanToMap(m, m1);
 			for(MovieType mt:m.getType()) {
-				
 				type+=tsi.findTypeByTypeID(mt.getTypeId()).getName()+"   ";
 			}
-			
 			m1.put("type", type);
 			list.add(m1);
 		}
@@ -148,7 +148,9 @@ public class FrameController {
 	 * @return
 	 */
 	@RequestMapping("addMovie")
-	public String addMovie() {
+	public String addMovie(Model model) {
+		List<Type> typeList = tsi.findAllType();
+		model.addAttribute("typeList", typeList);
 		return "manage/addMovie";
 	}
 	
@@ -168,11 +170,25 @@ public class FrameController {
 		List<Actor> actorList= (List<Actor>) map.get("actorList");
 		if(actorList.size() > 0) {
 			String actorlist = "";
+			String direlist = "";
 			for (Actor actor : actorList) {
-				actorlist += actor.getAname()+"，";
+				if(actor.getPosition().equals("演员")) {
+					actorlist += actor.getAname()+"，";
+				}else {
+					direlist += actor.getAname()+"，";
+				}
+				
 			}
-			actorlist = actorlist.substring(0,actorlist.lastIndexOf("，"));
+			
+			if(actorlist.contains("，")) {
+				actorlist = actorlist.substring(0,actorlist.lastIndexOf("，"));
+			}
+			if(direlist.contains("，")) {
+				direlist = direlist.substring(0,direlist.lastIndexOf("，"));
+			}
+			
 			map.put("actorList", actorlist);
+			map.put("direlist", direlist);
 		}
 		return map;
 	}
@@ -186,10 +202,11 @@ public class FrameController {
 	 */
 	@RequestMapping("alterMovie")
 	@ResponseBody
-	public Result alterMovie(Movie movie,@RequestParam(value = "typeList[]")String[] typeList,@RequestParam(value = "actor")String actor) {
+	public Result alterMovie(Movie movie,@RequestParam(value = "typeList[]")String[] typeList,@RequestParam(value = "actor")String actor,@RequestParam(value = "dire")String dire) {
 		int r = msi.updateMovie(movie);
 		mtsi.updateType(movie, typeList);
 		masi.update(actor, movie);
+		masi.update(1,dire,movie);
 		Result re;
 		if(r > 0) {
 			re = new Result(1, "修改成功");
@@ -199,6 +216,7 @@ public class FrameController {
 		
 		return re;
 	}
+	
 	/**
 	 * 上传电影封面
 	 */
@@ -208,11 +226,18 @@ public class FrameController {
         if (file.isEmpty()) {
             return "上传失败，请选择文件";
         }
-        System.err.println("id="+MovieId+",path="+file.getOriginalFilename());
         MovieImage mi = new MovieImage();
         mi.setImage(file.getOriginalFilename());
         mi.setMovieId(Integer.parseInt(MovieId));
-        misi.update(mi);
+        mi.setType(MovieImageService.COVER_TYPE);
+        String s = misi.getCover(mi.getMovieId());
+        if(s == null) {
+        	System.err.println(mi.getMovieId());
+        	System.err.println(mi.getImage());
+        	misi.add(mi);
+        }else {
+        	misi.update(mi);
+        }
         String fileName = file.getOriginalFilename();
         String filePath = "D:/upload/";
         File dest = new File(filePath + fileName);
@@ -223,4 +248,39 @@ public class FrameController {
         }
         return "上传失败！";
     }
+ 	
+ 	@RequestMapping("toAddMovie")
+	@ResponseBody
+	public Result addMovie(Movie movie,@RequestParam(value = "typeList[]")String[] typeList,@RequestParam(value = "actor")String actor,@RequestParam(value = "dire")String dire) {
+		int r = msi.add(movie);
+		int movieId = msi.getMovieId(movie);
+		movie.setMovieId(movieId);
+		mtsi.add(movie, typeList);
+		masi.add(actor, movie);
+		masi.add(1,dire,movie);
+		Result re;
+		if(r > 0) {
+			re = new Result(movieId, "添加成功");
+		}else {
+			re = new Result(0, "添加失败");
+		}
+		return re;
+	}
+ 	
+ 	@RequestMapping("deleteMovie")
+ 	@ResponseBody
+ 	public Result delete(@RequestParam(name="movieId") String MovieId) {
+ 		int id = Integer.parseInt(MovieId);
+ 		int result = msi.deleteMovie(id);
+ 		mtsi.delete(id);
+ 		misi.delete(id);
+ 		masi.delete(id);
+ 		Result re;
+		if(result > 0) {
+			re = new Result(1, "修改成功");
+		}else {
+			re = new Result(0, "修改失败");
+		}
+		return re;
+ 	}
 }
