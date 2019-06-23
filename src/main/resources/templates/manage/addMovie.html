@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Complex Toolbar on Dialog - jQuery EasyUI Demo</title>
+	<link rel="stylesheet" type="text/css" href="js/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="js/easyui/themes/icon.css">
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript">
+		function tt(){
+			$('#win').window('open');	
+		}
+	</script>
+</head>
+<body>
+<button onclick="tt()"></button>
+<div id="win" class="easyui-window" title="My Window" closed="true" style="width:300px;height:100px;padding:5px;">
+	Some Content.
+</div>
+</html>
